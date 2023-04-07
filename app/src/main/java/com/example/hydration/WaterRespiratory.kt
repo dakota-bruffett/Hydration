@@ -18,4 +18,6 @@ class WaterRespiratory(private val waterDao: WaterDao) {
     fun getAllRecords():Flow<List<WaterRecord>>{
         return waterDao.getAllRecords()
     }
+
+
 }

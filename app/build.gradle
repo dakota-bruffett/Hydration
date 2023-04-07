@@ -31,9 +31,9 @@ android {
         jvmTarget = '1.8'
     }
 }
-
+apply plugin: 'kotlin-kapt'
 dependencies {
-    apply plugin: 'kotlin-kapt'
+
 
     implementation 'androidx.core:core-ktx:1.10.0'
     implementation 'androidx.appcompat:appcompat:1.6.1'

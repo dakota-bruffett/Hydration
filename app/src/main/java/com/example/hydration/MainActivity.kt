@@ -14,7 +14,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var waterTabLayout: TabLayout
 
     private val waterViewModel by lazy {
-        WaterViewModelFactory((application as HydrationApplication).respiratory)
+        val app = application as HydrationApplication
+        WaterViewModelFactory((application as HydrationApplication).respiratory, daysRespiratory())
             .create(WaterViewModel::class.java)
     }
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -23,35 +24,34 @@ class MainActivity : AppCompatActivity() {
         waterViewPage = findViewById(R.id.water_view_page)
         waterTabLayout= findViewById(R.id.water_day_tab_layout)
 
+     //   val days = getWeekdays()
         val days = resources.getStringArray(R.array.Days)
 
-        val pagerAdapter = WaterViewPagerAdapter(this,days)
+
+
+        val pagerAdapter = WaterViewPagerAdapter(this, days)
         waterViewPage.adapter = pagerAdapter
 
-        TabLayoutMediator(waterTabLayout,waterViewPage){tab, position ->
-            tab.text= days[position]
-        }.attach()
-        scrolltoToday()
+         TabLayoutMediator(waterTabLayout,waterViewPage){tab, position ->
+             tab.text= days[position]
+         }.attach()
+         scrolltoToday()
 
-        //val tuesday = WaterRecord("Tuesday", 1)
-        //waterViewModel.insertNewRecord(tuesday)
-        
-        //val wednesday = WaterRecord("Wednesday",3)
-        //waterViewModel.insertNewRecord(wednesday)
+         val todayIndex = waterViewModel.getTodayIndex()
+         waterViewPage.setCurrentItem(todayIndex,false)// here is my tab layout
+
 
         waterViewModel.allRecords.observe(this){records->
             Log.d("Main_Activity","$records")
         }
-        //supportFragmentManager.beginTransaction()
-        //    .add(R.id.Contain, Hydration_Fragment.newInstance("Wednesday"))
-      //      .commit()
+
     }
 
     private fun scrolltoToday() {
         val today = Calendar.getInstance(Locale.getDefault())
         val day = today.get(Calendar.DAY_OF_WEEK)
         waterViewPage.setCurrentItem(day- 1, false)
-    }
+    }// here is the scroll type code
     private fun getWeekdays():List <String>{
         val dateFormatSymbols = DateFormatSymbols.getInstance(Locale.getDefault())
         return dateFormatSymbols.weekdays.asList().filter { it.isNotBlank() }

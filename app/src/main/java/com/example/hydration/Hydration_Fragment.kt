@@ -5,7 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
+import android.widget.ImageButton
 import android.widget.RatingBar
 
 // TODO: Rename parameter arguments, choose names that match
@@ -19,8 +19,8 @@ class Hydration_Fragment : Fragment() {
             .create(WaterViewModel::class.java)
     }
     private lateinit var waterRatingBar: RatingBar
-    private lateinit var addGlassButton: Button
-    private lateinit var resetGlassButton: Button
+    private lateinit var addGlassButton: ImageButton
+    private lateinit var resetGlassButton: ImageButton
     private lateinit var dayofweek:String
     private lateinit var waterRecord: WaterRecord
 
@@ -28,22 +28,11 @@ class Hydration_Fragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-          dayofweek= it.getString("There Was no key in the bundle")?:
-          throw IllegalStateException("There is none today")
+          dayofweek= it.getString(ARG_DayofWeek)!!
 
         }
     }
 
-    private fun addGlass() {
-      if  (waterRecord.glasses< 5){
-          waterRecord.glasses++
-          waterViewModel.updateRecord(waterRecord)
-      }
-    }
-    private fun resetGlass(){
-        waterRecord.glasses = 0
-        waterViewModel.updateRecord(waterRecord)
-    }
 
 
     override fun onCreateView(
@@ -54,9 +43,13 @@ class Hydration_Fragment : Fragment() {
         waterRatingBar = view.findViewById(R.id.water_rating_bar)
         addGlassButton = view.findViewById(R.id.add_glass_button)
         resetGlassButton = view.findViewById(R.id.reset_count_button)
+
+        waterRatingBar.numStars = WaterRecord.MAX_GLASSES
+        waterRatingBar.max = WaterRecord.MAX_GLASSES
+
         waterViewModel.getRecordForDay(dayofweek).observe(requireActivity()) { waterRecord ->
             if (waterRecord == null) {
-                waterViewModel.insertNewRecord(WaterRecord(dayofweek, glasses = 0))
+                waterViewModel.insertNewRecord(WaterRecord(dayofweek,0))
             } else {
                 this.waterRecord = waterRecord
                 waterRatingBar.progress = waterRecord.glasses
@@ -70,6 +63,16 @@ class Hydration_Fragment : Fragment() {
 
         // Inflate the layout for this fragment
         //return inflater.inflate(R.layout.fragment_hydration, container, false)
+    }
+    private fun addGlass() {
+        if  (waterRecord.glasses< 5){
+            waterRecord.glasses++
+            waterViewModel.updateRecord(waterRecord)
+        }
+    }
+    private fun resetGlass(){
+        waterRecord.glasses = 0
+        waterViewModel.updateRecord(waterRecord)
     }
 
     companion object {
